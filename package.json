@@ -1,0 +1,10 @@
+{
+  "name": "x509-cert-check",
+  "version": "0.0.1",
+  "description": "check x509 certificat",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4",
+    "x509": "^0.3.3"
+  }
+}

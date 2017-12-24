@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <title>x509 Cert Check</title>
+    <style>
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        var socket = io();
+        var SelectedFile;
+        var FReader;
+        var Name;
+
+        $(function () {
+
+            socket.on('MoreData', function (data){
+                console.log(data['Percent']);
+                var Place = data['Place'] * 524288; //Next Blocks Starting Pos
+                var NewFile; //hold the new Block
+                if(SelectedFile.webkitSlice)
+                    NewFile = SelectedFile.webkitSlice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
+                else
+                    NewFile = SelectedFile.slice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
+                FReader.readAsBinaryString(NewFile);
+            });
+
+            socket.on('chat message', function(msg){
+                console.log('new Message: ' + msg);
+                $('#messages').append($('<li>').text(msg));
+            });
+
+            socket.on('Done', function (data){
+            });
+
+            $('form').submit(function () {
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+
+            $( "#UploadButton" ).click(function() {
+                if($('#FileBox').prop("files").length > 0)
+                {
+                    SelectedFile = $('#FileBox').prop("files")[0];
+                    FReader = new FileReader();
+                    var Content = "<span id='NameArea'>Uploading " + SelectedFile.name + "</span>";
+                   $('#UploadArea').html(Content);
+                    FReader.onload = function(evnt){
+                        socket.emit('Upload', {Name: SelectedFile.name, Data : evnt.target.result });
+                    }
+                    socket.emit('Start', {Name: SelectedFile.name, 'Size' : SelectedFile.size });
+                }
+                else
+                {
+                    alert("Please Select A File");
+                }
+            });
+        });
+    </script>
+
+</head>
+<body>
+<div id="UploadBox">
+    <h2>x509 Cert Upload</h2>
+        <span id='UploadArea'>
+            <label for="FileBox">Choose A File: </label><input type="file" id="FileBox"><br> 
+            <button type='button' id='UploadButton' class='Button'>Upload</button>
+        </span>
+</div>
+
+<ul id="messages"></ul>
+</body>
+</html>
