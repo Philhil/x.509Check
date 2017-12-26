@@ -6,12 +6,28 @@ var fs = require('fs'),
     exec = require('child_process').exec,
     util = require('util');
 const x509 = require('x509');
-
+const tempDirPath = 'Temp/test2'; //in Project Dir
 var Files = {};
 
 app.get('/', function (req, res) {
+    try{
+        console.log('check if Tempdir exists');
+        if(!fs.existsSync(tempDirPath))
+        {
+            console.log('Temp Path does not exist. Try to create ' + tempDirPath);
+            fs.mkdirSync(tempDirPath);
+        }else{
+            console.log('Tempdir exists!');
+        }
+    }catch(err)
+    {
+        console.log(err);
+        res.sendFile(__dirname + '/error.html');
+        return;
+    }
     res.sendFile(__dirname + '/index.html');
 });
+
 
 io.on('connection', function (socket) {
     console.log('a user connected');
@@ -31,7 +47,7 @@ io.on('connection', function (socket) {
         };
         var Place = 0;
         try{
-            var Stat = fs.statSync('Temp/' +  Name);
+            var Stat = fs.statSync(tempDirPath + '/' +  Name);
             if(Stat.isFile())
             {
                 Files[Name]['Downloaded'] = Stat.size;
@@ -39,7 +55,7 @@ io.on('connection', function (socket) {
             }
         }
         catch(er){} //It's a New File
-        fs.open("Temp/" + Name, "a", 0755, function(err, fd){
+        fs.open(tempDirPath + '/' + Name, "a", 0755, function(err, fd){
             if(err)
             {
                 console.log(err);
@@ -71,7 +87,7 @@ io.on('connection', function (socket) {
                 });*/
 
                 try{
-                    var cert = x509.parseCert(__dirname + '/Temp/'+data['Name']);
+                    var cert = x509.parseCert(__dirname + '/' + tempDirPath + '/' + data['Name']);
 
 
                     var issuer;
