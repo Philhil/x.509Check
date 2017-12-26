@@ -6,7 +6,7 @@ var fs = require('fs'),
     exec = require('child_process').exec,
     util = require('util');
 const x509 = require('x509');
-const tempDirPath = 'Temp/test2'; //in Project Dir
+const tempDirPath = 'Temp'; //in Project Dir
 var Files = {};
 
 app.get('/', function (req, res) {
@@ -99,12 +99,37 @@ io.on('connection', function (socket) {
                     for (var k in cert['publicKey']){
                         pubkey += k + "=" + cert['publicKey'][k].toString() + ", ";
                     }
-
-                    socket.emit('chat message', "Version: " + cert['version'].toString());
-                    socket.emit('chat message', "Issuer: " + issuer);
-                    socket.emit('chat message', "Valid from: " + cert.notBefore);
-                    socket.emit('chat message', "Valid to: " + cert.notAfter);
-                    socket.emit('chat message', "Public Key: " + pubkey);
+                    //ToDo make a function that creates the json strings. So changes on data structure are only needed there.
+                    socket.emit('cert data', '{' +
+                        '"name" : "Version",' +
+                        '"value" : "' + cert['version'].toString() + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Issuer",' +
+                        '"value" : "' + issuer + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Valid from",' +
+                        '"value" : "' + cert.notBefore + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Valid to",' +
+                        '"value" : "' + cert.notAfter + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Public Key",' +
+                        '"value" : "' + pubkey + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
 
                     /*
                     x509.verify(
