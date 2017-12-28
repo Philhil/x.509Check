@@ -10,21 +10,6 @@ const tempDirPath = 'Temp/'; //in Project Dir
 var Files = {};
 
 app.get('/', function (req, res) {
-    try{
-        console.log('check if Tempdir exists');
-        if(!fs.existsSync(tempDirPath))
-        {
-            console.log('Temp Path does not exist. Try to create ' + tempDirPath);
-            fs.mkdirSync(tempDirPath);
-        }else{
-            console.log('Tempdir exists!');
-        }
-    }catch(err)
-    {
-        console.log(err);
-        res.sendFile(__dirname + '/error.html');
-        return;
-    }
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -39,6 +24,19 @@ io.on('connection', function (socket) {
     socket.on('Start', function (data) {
         var Name = data['Name'];
         socket.emit('chat message', "Start upload " + data['Name']);
+
+        try{
+            if(!fs.existsSync(tempDirPath))
+            {
+                //Temp Path does not exist. Try to create.
+                fs.mkdirSync(tempDirPath);
+            }
+        }catch(err)
+        {
+            console.log(err);
+            socket.emit('chat message', "ERROR on Server Filesys");
+            return;
+        }
 
         Files[Name] = {  //Create a new Entry in The Files Variable
             FileSize : data['Size'],
