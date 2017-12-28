@@ -105,9 +105,11 @@ io.on('connection', function (socket) {
                     var cert = x509.parseCert(__dirname + '/' + tempDirPath + '/' + data['Name']);
 					var date = new Date();
 
-					var subject;
-                    var issuer;
-                    var pubkey;
+					var subject = '';
+                    var issuer = '';
+                    var pubkey = '';
+					var pubkeyAlgo = '';
+					var pubkeySize = '';
 					
 					for (var k in cert['subject']){
 						subject += k + "=" + cert['subject'][k].toString() + ", ";
@@ -134,13 +136,13 @@ io.on('connection', function (socket) {
 	                    }
 					} 
 
-                    for (var k in cert['publicKey']){
-                        pubkey += k + "=" + cert['publicKey'][k].toString() + ", ";
-                    }
+					pubkey = 'e' + "=" + cert['publicKey']['e'].toString() + ", ";
+					pubkey += 'n' + "=" + cert['publicKey']['n'].toString();
+					pubkeyAlgo += "Algorithm" + "=" + cert['publicKey']['algorithm'].toString();
+					pubkeySize += "Keysize" + "=" + cert['publicKey']['bitSize'].toString();
                     
                     socket.emit('cert data', createJson('Version', cert['version'].toString(), 'none', 'none'));
 					socket.emit('cert data', createJson('Subject', subject, 'none', 'none'));
-                    socket.emit('cert data', createJson('Issuer', issuer, 'none', 'none'));
 					if (selfsigned == true)
 					{
                         socket.emit('cert data', createJson('Issuer', issuer, 'warn', 'Cert is selfsigned. Others may not trust it.'));
@@ -162,9 +164,17 @@ io.on('connection', function (socket) {
 					}
 					else
 					{
-                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'ok', 'Cert is active.'));
+                        socket.emit('cert data', createJson('Valid to', cert.notAfter, 'ok', 'Cert is active.'));
 					}
-                    socket.emit('cert data', createJson('Public Key', pubkey, 'none', 'none'));
+					socket.emit('cert data', createJson('Public Key', pubkey, 'none', 'none'));
+                    socket.emit('cert data', createJson('Public Key', pubkeyAlgo, 'none', 'none'));
+					if (parseInt(pubkeySize) < 2048) {
+						socket.emit('cert data', createJson('Public Key', pubkeySize, 'warning', 'Key is short. May not be save.'));
+					}
+					else
+					{
+						socket.emit('cert data', createJson('Public Key', pubkeySize, 'ok', 'Key is long enough.'));
+					}
 
                     /*
                     x509.verify(
