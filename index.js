@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require("express");
+var app = express();
 var https = require('https');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -6,6 +7,7 @@ var fs = require('fs'),
     exec = require('child_process').exec,
     util = require('util');
 const x509 = require('x509');
+
 const tempDirPath = 'Temp'; //in Project Dir
 var Files = {};
 
@@ -27,6 +29,13 @@ app.get('/', function (req, res) {
     }
     res.sendFile(__dirname + '/index.html');
 });
+//deliver static assets directly with express
+app.use('/assets/custom', express.static(__dirname + '/assets'));
+//deliver jquery from within node
+app.use('/assets/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
+//deliver bootstrap from within node
+app.use('/assets/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
+
 
 
 io.on('connection', function (socket) {
