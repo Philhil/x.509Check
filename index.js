@@ -7,8 +7,7 @@ var fs = require('fs'),
     exec = require('child_process').exec,
     util = require('util');
 const x509 = require('x509');
-
-const tempDirPath = 'Temp'; //in Project Dir
+const tempDirPath = 'Temp/'; //in Project Dir
 var Files = {};
 
 app.get('/', function (req, res) {
