@@ -20,7 +20,16 @@ app.use('/assets/jquery', express.static(__dirname + '/node_modules/jquery/dist'
 //deliver bootstrap from within node
 app.use('/assets/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
 
-
+function createJson(name, value, criticallity, explanation)
+{	
+	var json = '{' + '"name" : "' + name + '",' +
+    '"value" : "' + value + '",' +
+    '"criticallity" : "' + criticallity + '",' +
+    '"explanation" : "' + explanation + '"' +
+    '}'
+	
+	return json;
+}
 
 io.on('connection', function (socket) {
     console.log('a user connected');
@@ -94,48 +103,66 @@ io.on('connection', function (socket) {
 
                 try{
                     var cert = x509.parseCert(__dirname + '/' + tempDirPath + '/' + data['Name']);
+					var date = new Date();
 
-
+					var subject;
                     var issuer;
                     var pubkey;
+					
+					for (var k in cert['subject']){
+						subject += k + "=" + cert['subject'][k].toString() + ", ";
+					}
+					
                     for (var k in cert['issuer']){
                         issuer += k + "=" + cert['issuer'][k].toString() + ", ";
                     }
+					
+					/*check if cert is self signed
+					if selfsigned, then subject and issuer are the same
+					*/
+					var selfsigned = true;
+					
+					for (var k in cert['subject']){
+	                    for (var j in cert['issuer']){
+	                        if (k == j)
+							{
+								if (cert['subject'][k].toString() != cert['issuer'][j].toString())
+								{
+									selfsigned = false;
+								}
+							}
+	                    }
+					} 
 
                     for (var k in cert['publicKey']){
                         pubkey += k + "=" + cert['publicKey'][k].toString() + ", ";
                     }
-                    //ToDo make a function that creates the json strings. So changes on data structure are only needed there.
-                    socket.emit('cert data', '{' +
-                        '"name" : "Version",' +
-                        '"value" : "' + cert['version'].toString() + '",' +
-                        '"criticallity" : "' + 'none' + '",' +
-                        '"explanation" : "' + 'none' + '"' +
-                        '}');
-                    socket.emit('cert data', '{' +
-                        '"name" : "Issuer",' +
-                        '"value" : "' + issuer + '",' +
-                        '"criticallity" : "' + 'none' + '",' +
-                        '"explanation" : "' + 'none' + '"' +
-                        '}');
-                    socket.emit('cert data', '{' +
-                        '"name" : "Valid from",' +
-                        '"value" : "' + cert.notBefore + '",' +
-                        '"criticallity" : "' + 'none' + '",' +
-                        '"explanation" : "' + 'none' + '"' +
-                        '}');
-                    socket.emit('cert data', '{' +
-                        '"name" : "Valid to",' +
-                        '"value" : "' + cert.notAfter + '",' +
-                        '"criticallity" : "' + 'none' + '",' +
-                        '"explanation" : "' + 'none' + '"' +
-                        '}');
-                    socket.emit('cert data', '{' +
-                        '"name" : "Public Key",' +
-                        '"value" : "' + pubkey + '",' +
-                        '"criticallity" : "' + 'none' + '",' +
-                        '"explanation" : "' + 'none' + '"' +
-                        '}');
+                    
+                    socket.emit('cert data', createJson('Version', cert['version'].toString(), 'none', 'none'));
+					socket.emit('cert data', createJson('Subject', subject, 'none', 'none'));
+                    socket.emit('cert data', createJson('Issuer', issuer, 'none', 'none'));
+					if (selfsigned == true)
+					{
+						socket.emit('chat message', 'Cert is selfsigned.');
+					}
+					else
+					{
+						socket.emit('chat message', 'Cert is not selfsigned.');
+					}
+                    socket.emit('cert data', createJson('Valid from', cert.notBefore, 'none', 'none'));
+                    socket.emit('cert data', createJson('Valid to', cert.notAfter, 'none', 'none'));
+					//check if date is valid
+					if (cert.notBefore > date) {
+						socket.emit('chat message', 'Cert is not active yet.');
+					}
+					else if (cert.notAfter < date) {
+						socket.emit('chat message', 'Cert has expired.');
+					}
+					else
+					{
+						socket.emit('chat message', 'Cert is active.');
+					}
+                    socket.emit('cert data', createJson('Public Key', pubkey, 'none', 'none'));
 
                     /*
                     x509.verify(
