@@ -11,13 +11,32 @@
     <script src="/assets/custom/x509checkGUI.js"></script>
 </head>
 <body>
-<div id="UploadBox">
-    <h2>x509 Cert Upload</h2>
-        <span id='UploadArea'>
-            <label for="FileBox">Choose A File: </label><input type="file" id="FileBox"><br> 
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h1>x509 Certificate checker</h1>
+            <span>With this tool you can check your existing x509 certificate. You'll see the information that is stored inside of it like the validity dates and the additional informations.</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m6 offset-m3" id="UploadBox">
+            <h2>x509 Cert Upload</h2>
+            <span id='UploadArea'>
+            <label for="FileBox">Choose A File: </label><input type="file" id="FileBox"><br>
             <button type='button' id='UploadButton' class='Button'>Upload</button>
         </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 hidden" id="CertBox">
+            <h2>Certificate Data</h2>
+            <h3>Log</h3>
+            <div id="messages"></div>
+            <h3>Details</h3>
+            <div id="certDetails"></div>
+        </div>
+    </div>
 </div>
-<ul id="messages"></ul>
+
 </body>
 </html>
