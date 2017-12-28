@@ -143,24 +143,26 @@ io.on('connection', function (socket) {
                     socket.emit('cert data', createJson('Issuer', issuer, 'none', 'none'));
 					if (selfsigned == true)
 					{
-						socket.emit('chat message', 'Cert is selfsigned.');
+                        socket.emit('cert data', createJson('Issuer', issuer, 'warn', 'Cert is selfsigned. Others may not trust it.'));
 					}
 					else
 					{
-						socket.emit('chat message', 'Cert is not selfsigned.');
+                        socket.emit('cert data', createJson('Issuer', issuer, 'ok', 'Cert is not selfsigned.'));
 					}
-                    socket.emit('cert data', createJson('Valid from', cert.notBefore, 'none', 'none'));
-                    socket.emit('cert data', createJson('Valid to', cert.notAfter, 'none', 'none'));
+
+
 					//check if date is valid
 					if (cert.notBefore > date) {
-						socket.emit('chat message', 'Cert is not active yet.');
-					}
-					else if (cert.notAfter < date) {
-						socket.emit('chat message', 'Cert has expired.');
+                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'warning', 'Cert is not active yet.'));
+					}else{
+                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'ok', 'Cert is active.'));
+                    }
+					if (cert.notAfter < date) {
+                        socket.emit('cert data', createJson('Valid to', cert.notAfter, 'critical', 'Cert has expired.'));
 					}
 					else
 					{
-						socket.emit('chat message', 'Cert is active.');
+                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'ok', 'Cert is active.'));
 					}
                     socket.emit('cert data', createJson('Public Key', pubkey, 'none', 'none'));
 
