@@ -140,7 +140,6 @@ io.on('connection', function (socket) {
                     
                     socket.emit('cert data', createJson('Version', cert['version'].toString(), 'none', 'none'));
 					socket.emit('cert data', createJson('Subject', subject, 'none', 'none'));
-                    socket.emit('cert data', createJson('Issuer', issuer, 'none', 'none'));
 					if (selfsigned == true)
 					{
                         socket.emit('cert data', createJson('Issuer', issuer, 'warn', 'Cert is selfsigned. Others may not trust it.'));
