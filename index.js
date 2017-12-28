@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require("express");
+var app = express();
 var https = require('https');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -12,6 +13,13 @@ var Files = {};
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+//deliver static assets directly with express
+app.use('/assets/custom', express.static(__dirname + '/assets'));
+//deliver jquery from within node
+app.use('/assets/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
+//deliver bootstrap from within node
+app.use('/assets/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
+
 
 
 io.on('connection', function (socket) {
@@ -97,12 +105,37 @@ io.on('connection', function (socket) {
                     for (var k in cert['publicKey']){
                         pubkey += k + "=" + cert['publicKey'][k].toString() + ", ";
                     }
-
-                    socket.emit('chat message', "Version: " + cert['version'].toString());
-                    socket.emit('chat message', "Issuer: " + issuer);
-                    socket.emit('chat message', "Valid from: " + cert.notBefore);
-                    socket.emit('chat message', "Valid to: " + cert.notAfter);
-                    socket.emit('chat message', "Public Key: " + pubkey);
+                    //ToDo make a function that creates the json strings. So changes on data structure are only needed there.
+                    socket.emit('cert data', '{' +
+                        '"name" : "Version",' +
+                        '"value" : "' + cert['version'].toString() + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Issuer",' +
+                        '"value" : "' + issuer + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Valid from",' +
+                        '"value" : "' + cert.notBefore + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Valid to",' +
+                        '"value" : "' + cert.notAfter + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
+                    socket.emit('cert data', '{' +
+                        '"name" : "Public Key",' +
+                        '"value" : "' + pubkey + '",' +
+                        '"criticallity" : "' + 'none' + '",' +
+                        '"explanation" : "' + 'none' + '"' +
+                        '}');
 
                     /*
                     x509.verify(

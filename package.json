@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "express": "^4.16.2",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1",
     "socket.io": "^2.0.4",
     "x509": "^0.3.3"
   }
