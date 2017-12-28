@@ -152,7 +152,7 @@ io.on('connection', function (socket) {
 
 					//check if date is valid
 					if (cert.notBefore > date) {
-                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'warning', 'Cert is not active yet.'));
+                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'warn', 'Cert is not active yet.'));
 					}else{
                         socket.emit('cert data', createJson('Valid from', cert.notBefore, 'ok', 'Cert is active.'));
                     }

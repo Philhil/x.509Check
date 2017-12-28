@@ -8,7 +8,26 @@
     padding: 5px 10px;
 }
 
-#messages li:nth-child(odd) {
+#messages div.row:nth-child(odd) {
     background: #eee;
 }
 
+#certDetails div.row:last-child {
+    border-width: 0;
+}
+#certDetails div.row {
+    border-width: 1px;
+    border-bottom: solid black;
+}
+#certDetails div.innerRow:last-child {
+    border-width: 0;
+}
+#certDetails div.innerRow {
+    border-width: 1px;
+    border-bottom: dotted black;
+}
+span.glyphicon {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    font-size: 5em;
+}
