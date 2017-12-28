@@ -38,7 +38,7 @@ function parseCriticality(strText)
 function parseComaseperatedValued(strText)
 {
     var rows = strText.split(",");
-    if(rows.length <=1)
+    if(rows.length <1)
     {
         return '<span>' + strText + '</span>';
     }

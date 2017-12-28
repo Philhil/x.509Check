@@ -12,7 +12,10 @@
     background: #eee;
 }
 
-#certDetails div.row:last-child {
+#certDetails>div.row:nth-child(odd) {
+    background: #eee;
+}
+#certDetails div.col-md-5>div.row:last-child {
     border-width: 0;
 }
 #certDetails div.row {
@@ -26,7 +29,10 @@
     border-width: 1px;
     border-bottom: dotted black;
 }
-span.glyphicon {
+#certDetails div>span {
+    word-wrap: break-word;
+}
+#certDetails span.glyphicon {
     padding-top: 1em;
     padding-bottom: 1em;
     font-size: 5em;
