@@ -30,7 +30,7 @@ you can get a precreated image from the [Release Page](https://github.com/Philhi
 ### save image
 ```shell
    # Save existing image to a tar file.
-   docker save -o <path>/<filename>.tar
+   docker save -o <path>/<filename>.tar <container-name>
 ```
 ### import existing Dockerimage from tar file
 ```shell
