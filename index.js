@@ -141,39 +141,39 @@ io.on('connection', function (socket) {
 					pubkeyAlgo += "Algorithm" + "=" + cert['publicKey']['algorithm'].toString();
 					pubkeySize += "Keysize" + "=" + cert['publicKey']['bitSize'].toString();
                     
-                    socket.emit('cert data', createJson('Version', cert['version'].toString(), 'none', 'none'));
-					socket.emit('cert data', createJson('Subject', subject, 'none', 'none'));
+                    socket.emit('cert data', createJson('Version', cert['version'].toString(), 'none', 'Version of the Certificate.'));
+					socket.emit('cert data', createJson('Subject', subject, 'none', 'The organization, which is the holder of the Certificate.'));
 					if (selfsigned == true)
 					{
-                        socket.emit('cert data', createJson('Issuer', issuer, 'warn', 'Cert is selfsigned. Others may not trust it.'));
+                        socket.emit('cert data', createJson('Issuer', issuer, 'warn', 'Issuer and Subject are the same, therefore the Certificate is selfsigned. Others may not trust it.'));
 					}
 					else
 					{
-                        socket.emit('cert data', createJson('Issuer', issuer, 'ok', 'Cert is not selfsigned.'));
+                        socket.emit('cert data', createJson('Issuer', issuer, 'ok', 'Issuer and Subject are different, therefore the Certificate is not selfsigned.'));
 					}
 
 
 					//check if date is valid
 					if (cert.notBefore > date) {
-                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'warn', 'Cert is not active yet.'));
+                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'warn', 'Certificate is not active yet.'));
 					}else{
-                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'ok', 'Cert is active.'));
+                        socket.emit('cert data', createJson('Valid from', cert.notBefore, 'ok', 'Certificate is active.'));
                     }
 					if (cert.notAfter < date) {
-                        socket.emit('cert data', createJson('Valid to', cert.notAfter, 'critical', 'Cert has expired.'));
+                        socket.emit('cert data', createJson('Valid to', cert.notAfter, 'critical', 'Certificate has expired.'));
 					}
 					else
 					{
-                        socket.emit('cert data', createJson('Valid to', cert.notAfter, 'ok', 'Cert is active.'));
+                        socket.emit('cert data', createJson('Valid to', cert.notAfter, 'ok', 'Certificate is active.'));
 					}
-					socket.emit('cert data', createJson('Public Key', pubkey, 'none', 'none'));
-                    socket.emit('cert data', createJson('Public Key', pubkeyAlgo, 'none', 'none'));
-					if (parseInt(pubkeySize) < 2048) {
-						socket.emit('cert data', createJson('Public Key', pubkeySize, 'warning', 'Key is short. May not be save.'));
+					socket.emit('cert data', createJson('Public Key', pubkey, 'none', 'Parameters from the public key.'));
+                    socket.emit('cert data', createJson('Public Key', pubkeyAlgo, 'none', 'Algorithm that was used to create the public key.'));
+					if (cert['publicKey']['bitSize'] < 2048) {
+						socket.emit('cert data', createJson('Public Key', pubkeySize, 'warn', 'The key is short. It may not be save.'));
 					}
 					else
 					{
-						socket.emit('cert data', createJson('Public Key', pubkeySize, 'ok', 'Key is long enough.'));
+						socket.emit('cert data', createJson('Public Key', pubkeySize, 'ok', 'The key is long enough.'));
 					}
 
                     /*
