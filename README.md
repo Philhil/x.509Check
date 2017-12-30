@@ -1,6 +1,9 @@
 # x.509Check
 ## What is this project all about?
-This project is a small tool based on [nodejs](https://github.com/nodejs) and [Docker](https://github.com/docker). It provides a website where you can upload a [x509](https://en.wikipedia.org/wiki/X.509) certificate and let it pass some checks and get the information stored in it. 
+This project is a small tool based on [nodejs](https://github.com/nodejs) and [Docker](https://github.com/docker). 
+Credits also go to the node [x509 Package](https://github.com/Southern/node-x509) that is used for parsing the certificate.
+
+It provides a website where you can upload a [x509](https://en.wikipedia.org/wiki/X.509) certificate and let it pass some checks and get the information stored in it. 
 
 Information that you get from the tool:
 * x509 Version number
