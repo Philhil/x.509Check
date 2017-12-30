@@ -157,20 +157,20 @@ io.on('connection', function (socket) {
                         case "md2":
                         case "md5":
                             signatureCrit = "critical";
-                            signatureHint = "This hash algorithms are not secure anymore.";
+                            signatureHint = "This hash algorithm is not secure anymore.";
                             break;
                         case "sha1":
                             signatureCrit = "warn";
-                            signatureHint = "This hash algorithms are not secure anymore.";
+                            signatureHint = "This hash algorithm is not secure anymore.";
                             break;
                         case "sha256":
                         case "sha512":
                             signatureCrit = "ok";
-                            signatureHint = "This hash algorithms are seen as secure.";
+                            signatureHint = "This hash algorithm is seen as secure.";
                             break;
                         default:
                             signatureCrit = "warn";
-                            signatureHint = "This hash algorithms are not implemented.";
+                            signatureHint = "This hash algorithm is not implemented.";
                             break;
                     }
                     socket.emit('cert data', createJson('Signature Algorithm', signatureAlgorithmString, signatureCrit, signatureHint));
@@ -178,7 +178,7 @@ io.on('connection', function (socket) {
                     socket.emit('cert data', createJson('Subject', subject, 'none', 'The organization, which is the holder of the Certificate.'));
 					//print alternative names:
                     var certAlternativeNames = cert['altNames'].toString();
-                    socket.emit('cert data', createJson('Alternative names', certAlternativeNames, 'none', "A certifacte can provide more than one name.This alternative names can be used, e.g. a webserver hosts more than one page."));
+                    socket.emit('cert data', createJson('Alternative names', certAlternativeNames, 'none', "A certifacte can provide more than one name. These alternative names can be used, e.g. a webserver hosts more than one page."));
 
                     if (selfsigned == true)
 					{
