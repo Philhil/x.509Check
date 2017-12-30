@@ -103,10 +103,12 @@ io.on('connection', function (socket) {
 
                 try{
                     var cert = x509.parseCert(__dirname + '/' + tempDirPath + '/' + data['Name']);
+                    console.log(cert);
 					var date = new Date();
 
 					var subject = '';
                     var issuer = '';
+                    var signatureAlgorithm = '';
                     var pubkey = '';
 					var pubkeyAlgo = '';
 					var pubkeySize = '';
@@ -140,10 +142,45 @@ io.on('connection', function (socket) {
 					pubkey += 'n' + "=" + cert['publicKey']['n'].toString();
 					pubkeyAlgo += "Algorithm" + "=" + cert['publicKey']['algorithm'].toString();
 					pubkeySize += "Keysize" + "=" + cert['publicKey']['bitSize'].toString();
-                    
                     socket.emit('cert data', createJson('Version', cert['version'].toString(), 'none', 'Version of the Certificate.'));
-					socket.emit('cert data', createJson('Subject', subject, 'none', 'The organization, which is the holder of the Certificate.'));
-					if (selfsigned == true)
+                    socket.emit('cert data', createJson('Serial no.', cert['serial'].toString(), 'none', 'Serialnumber of the Certificate. Is unique for every certificate that is issued from one CA.'));
+                    //Check signature algorithm
+                    signatureAlgorithm = cert['signatureAlgorithm'].toString();
+
+                    var signatureAlgorithmSplit = signatureAlgorithm.split('With');
+                    var signatureAlgorithmString = 'Hash='+signatureAlgorithmSplit[0]+',Encryption='+signatureAlgorithmSplit[1];
+                    var signatureCrit = "none";
+                    var signatureHint = "none";
+
+                    switch(signatureAlgorithmSplit[0].toLowerCase())
+                    {
+                        case "md2":
+                        case "md5":
+                            signatureCrit = "critical";
+                            signatureHint = "This hash algorithms are not secure anymore.";
+                            break;
+                        case "sha1":
+                            signatureCrit = "warn";
+                            signatureHint = "This hash algorithms are not secure anymore.";
+                            break;
+                        case "sha256":
+                        case "sha512":
+                            signatureCrit = "ok";
+                            signatureHint = "This hash algorithms are seen as secure.";
+                            break;
+                        default:
+                            signatureCrit = "warn";
+                            signatureHint = "This hash algorithms are not implemented.";
+                            break;
+                    }
+                    socket.emit('cert data', createJson('Signature Algorithm', signatureAlgorithmString, signatureCrit, signatureHint));
+                    socket.emit('cert data', createJson('fingerprint', cert['fingerPrint'].toString(), 'none', 'The fingerprint is used to compare two certificates with each other.'));
+                    socket.emit('cert data', createJson('Subject', subject, 'none', 'The organization, which is the holder of the Certificate.'));
+					//print alternative names:
+                    var certAlternativeNames = cert['altNames'].toString();
+                    socket.emit('cert data', createJson('Alternative names', certAlternativeNames, 'none', "A certifacte can provide more than one name.This alternative names can be used, e.g. a webserver hosts more than one page."));
+
+                    if (selfsigned == true)
 					{
                         socket.emit('cert data', createJson('Issuer', issuer, 'warn', 'Issuer and Subject are the same, therefore the Certificate is selfsigned. Others may not trust it.'));
 					}
