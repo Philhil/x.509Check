@@ -1,4 +1,26 @@
 # x.509Check
+## What is this project all about?
+This project is a small tool based on [nodejs](https://github.com/nodejs) and [Docker](https://github.com/docker). It provides a website where you can upload a [x509](https://en.wikipedia.org/wiki/X.509) certificate and let it pass some checks and get the information stored in it. 
+
+Information that you get from the tool:
+* x509 Version number
+* Fingerpint
+* Hash algorithms
+* Subject
+* Alternative Names
+* Issuer
+* Valid from / until
+* public key information
+  * Fingerprint
+  * Algorythm
+  * Keysize
+
+The certificate will be checked for:
+* Hash algorithm
+* Validate from/until
+* Selfsigned, External signed
+* The length of the public key
+
 
 
 ## build and start via docker
@@ -40,3 +62,15 @@ you can get a precreated image from the [Release Page](https://github.com/Philhi
    # check if file was imported successfully (shoud appear in list).
    docker images
 ```
+## usage
+
+After you started the Dockerimage start your web browser and open ```localhost:<port>```. 
+Now use the form to select a certificate that you want to check. It has to be Base64 or DER encoded and the extention .cer,.cert,.crt or .pem.
+Click on the Upload Button and the tool will show you the results of the validation.
+
+## whats not implemented
+There are several enhancements that can be implemented in the future.
+* Check the whole certificate chain for trust and validate if an external signed certificate is trustfully.
+* add more detailed checks for algorithms and security issues. Evaluate the encryption algorithm and make considerations for quantum calculations.
+* Improve UI with mobile responsive design.
+* Add possibility to show certificate extensions.
