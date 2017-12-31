@@ -77,3 +77,5 @@ There are several enhancements that can be implemented in the future.
 * add more detailed checks for algorithms and security issues. Evaluate the encryption algorithm and make considerations for quantum calculations.
 * Improve UI with mobile responsive design.
 * Add possibility to show certificate extensions.
+* Add posibility to validate and evaluate a certifiace signing request.
+* Add more options to try the whole certification signing and trust process.
