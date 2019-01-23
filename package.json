@@ -7,9 +7,9 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^4.2.1",
     "express": "^4.16.2",
-    "jquery": "^3.2.1",
+    "jquery": "^3.3.1",
     "socket.io": "^2.0.4",
     "x509": "^0.3.3"
   }
